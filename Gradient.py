@@ -17,13 +17,23 @@ class GradientDescent:
             self.it += 1
             return self.it <= self.num
 
-    #returns
+    #returns xdiff_stop_criteria
     class xdiff_stop_crit(object):
         def __init__(self, diff):
             self.previous = np.inf
             self.diff = diff
         def __call__(self, value):
             result = abs(self.previous - value) < self.diff
+            self.previous = value
+            return result
+
+    #returns xdiff_stop_criteria
+    class ydiff_stop_crit(object):
+        def __init__(self, diff):
+            self.previous = np.inf
+            self.diff = diff
+        def __call__(self, value):
+            result = abs(func(self.previous) - func(value)) < self.diff
             self.previous = value
             return result
 
