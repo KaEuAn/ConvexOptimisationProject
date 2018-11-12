@@ -9,13 +9,23 @@ from scipy.optimize import minimize_scalar
 
 class GradientDescent:
     #returns iteration_stop_criteria
-    class iteration_dec_crit(object):
+    class iteration_stop_crit(object):
         def __init__(self, its):
             self.num = its
             self.it = 0
         def __call__(self):
             self.it += 1
             return self.it <= self.num
+
+    #returns
+    class xdiff_stop_crit(object):
+        def __init__(self, diff):
+            self.previous = np.inf
+            self.diff = diff
+        def __call__(self, value):
+            result = abs(self.previous - value)
+            self.previous = value
+            return result
 
     def __init__(self, func, dimension):
         self.func = func
@@ -32,7 +42,7 @@ class GradientDescent:
         nablaF = self.get_gradient(self.pos)
         self.pos -= self.get_alpha(nablaF) * nablaF
     
-    def make(self, stop_criteria=iteration_dec_crit(1000)):
+    def make(self, stop_criteria=iteration_stop_crit(1000)):
         while not stop_criteria:
             self.make_step()
         return self.pos
