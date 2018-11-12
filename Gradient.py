@@ -4,15 +4,19 @@ from pylab import *
 from sympy import *
 from scipy.optimize import minimize_scalar
 
-# returns stop_criteria_function 
-def iteration_dec(it_num):
-    num = it_num
-    def decor(*args, **kwargs):
-        iter += 1
-        return iter > num
-    return decor
+
+
 
 class GradientDescent:
+    #returns iteration_stop_criteria
+    class iteration_dec_crit(object):
+        def __init__(self, its):
+            self.num = its
+            self.it = 0
+        def __call__(self):
+            self.it += 1
+            return self.it <= self.num
+
     def __init__(self, func, dimension):
         self.func = func
         self.n = dimension
@@ -28,7 +32,7 @@ class GradientDescent:
         nablaF = self.get_gradient(self.pos)
         self.pos -= self.get_alpha(nablaF) * nablaF
     
-    def make(self, stop_criteria=iteration_dec(1000)):
+    def make(self, stop_criteria=iteration_dec_crit(1000)):
         while not stop_criteria:
             self.make_step()
         return self.pos
