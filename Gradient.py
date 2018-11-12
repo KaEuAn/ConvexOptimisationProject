@@ -23,7 +23,7 @@ class GradientDescent:
             self.previous = np.inf
             self.diff = diff
         def __call__(self, value):
-            result = abs(self.previous - value)
+            result = abs(self.previous - value) < self.diff
             self.previous = value
             return result
 
