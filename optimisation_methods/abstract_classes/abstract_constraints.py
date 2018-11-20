@@ -29,8 +29,7 @@ class NoequalLinearConstraints:
         '''
 
         # check for the linear system A x = b is compatible
-
-        assert(A.shape[1] == b.shape[0])
+        assert(A.shape[0] == b.shape[0])
 
         A_rank = np.linalg.matrix_rank(A)
         A_augmented = np.append(A, b.reshape(b.shape[0], 1), axis=1)
@@ -47,6 +46,7 @@ class NoequalLinearConstraints:
         # Below we select numbers of the rows in the A matrix, 
         # which are independent 
         _, indep_rows_numbers = sympy.Matrix(A).T.rref()
+        indep_rows_numbers = list(indep_rows_numbers)
         A_indep = A[indep_rows_numbers]
         b_indep = b[indep_rows_numbers]
 
@@ -98,7 +98,7 @@ class NoequalLinearConstraints:
 
         res_vector = A_indep.T @ alpha
         res_point = y - res_vector
-        return(res_point)
+        return(np.array(res_point))
     
     def Satisfy(self, x):
         '''
@@ -130,9 +130,10 @@ class NoequalLinearConstraints:
             # selected combinations
             projs = []
             for comb in combs:
-                proj = no_constraints_projection(
+                comb = list(comb)
+                proj = self.no_constraints_projection(
                     self.F[comb], 
-                    b[comb], 
+                    self.b[comb], 
                     y)
                 projs.append(proj)
             
@@ -159,14 +160,6 @@ class NoequalLinearConstraints:
                 min_proj = proj
         
         return min_proj
-        
-
-
-            
-
-            
-
-        
 
 
         
