@@ -12,6 +12,9 @@ class NoequalLinearConstraints:
     x is m - vector
     g is n - vector
     '''
+    # this constant specifies the accuracy
+    # of the method in computing the result
+    epsilon = 1e-14
     
     def __init__(self, F, b):
         self.F = F
@@ -98,16 +101,26 @@ class NoequalLinearConstraints:
 
         res_vector = A_indep.T @ alpha
         res_point = y - res_vector
-        return(np.array(res_point))
+        return(res_point)
     
-    def Satisfy(self, x):
+    def _satisfy_specific_constr(self, x, numbs):
+        '''
+        This method returns True, 
+        if x satisfies the constraints,
+        specified in numbs array,
+        otherwise it returns False
+        '''
+        assert(self.F.shape[1] == x.shape[0])
+        return(np.min((self.b - self.F @ x)[numbs]) >= -self.epsilon)
+    
+    def satisfy(self, x):
         '''
         This method returns True,
         if x satisfies the constraints,
         otherwise it returns False
         '''
         assert(self.F.shape[1] == x.shape[0])
-        return(np.min(self.b - self.F @ x) >= 0)
+        return(np.min(self.b - self.F @ x) >= -self.epsilon)
 
     
     def projection(self, y):
@@ -116,6 +129,11 @@ class NoequalLinearConstraints:
         x = \argmin_{x \in Set}(norm(x - y)), 
         where norm is the euclidean norm
         '''
+
+        # check for y satisfy constraints
+        # (so, projection isn't needed)
+        if self.satisfy(y) :
+            return y
 
         proj_satisf_constr = []
 
@@ -131,16 +149,19 @@ class NoequalLinearConstraints:
             projs = []
             for comb in combs:
                 comb = list(comb)
-                proj = self.no_constraints_projection(
-                    self.F[comb], 
-                    self.b[comb], 
-                    y)
-                projs.append(proj)
-            
+                if not self._satisfy_specific_constr(y, comb):
+                    proj = self.no_constraints_projection(
+                        self.F[comb], 
+                        self.b[comb], 
+                        y)
+                    
+                    if not proj is None:
+                        projs.append(proj)
+
             # find projections that satisfy 
             # the constraints
             proj_satisf_constr = list(
-                filter(self.Satisfy, projs))
+                filter(self.satisfy, projs))
             
             if proj_satisf_constr:
                 # Success!
