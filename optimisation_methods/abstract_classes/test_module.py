@@ -120,6 +120,26 @@ class TestTwoDimensionalConstraints(TestConstraintsMethod):
         self.assertEqual(
             tuple(np.round(answer, 6)), 
             tuple(np.round(lc.projection(y), 6)))
+    
+    def test_degenerate_case_one(self):
+        F = np.array([[1, 1], [-1, -1]])
+        b = np.array([1, -1])
+        y = np.array([2, 1])
+        answer = np.array([1., 0.])
+        lc = self.LC(F, b)
+        self.assertEqual(
+            tuple(answer), 
+            tuple(lc.projection(y)))
+    
+    def test_degenerate_case_two(self):
+        F = np.array([[1., 1.], [-1., -1.], [-1, 1], [1, -1]])
+        b = np.array([1., -1., 1., -1.])
+        y = np.array([2., 1.])
+        answer = np.array([0., 1.])
+        lc = self.LC(F, b)
+        self.assertEqual(
+            tuple(answer), 
+            tuple(lc.projection(y)))     
 
 if __name__ == '__main__' :
     unittest.main()
