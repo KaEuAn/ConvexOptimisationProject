@@ -14,11 +14,11 @@ class NoequalLinearConstraints:
     '''
     # this constant specifies the accuracy
     # of the method in computing the result
-    epsilon = 1e-14
+    epsilon = 1e-13
     
-    def __init__(self, F, b):
+    def __init__(self, F, g):
         self.F = F
-        self.b = b
+        self.b = g
     
     @staticmethod
     def no_constraints_projection(A, b, y):
@@ -157,6 +157,7 @@ class NoequalLinearConstraints:
                     
                     if not proj is None:
                         projs.append(proj)
+            
 
             # find projections that satisfy 
             # the constraints
@@ -173,6 +174,7 @@ class NoequalLinearConstraints:
             # something have gone wrong!
             assert(1 == 0)
         
+        
         # selection the point, which 
         # correstponded to minimal projection
         min_proj = proj_satisf_constr[0]
@@ -181,6 +183,25 @@ class NoequalLinearConstraints:
                 min_proj = proj
         
         return min_proj
+
+class LinearConstraints(NoequalLinearConstraints):
+    '''
+    This class describes a set with 
+    noequal and equal linear constraints, 
+    that is the set is given as following:
+    Set = {x | F * x <= g and A * x == b}, 
+    where F is matrix of n*m size,
+    A is matrix of k*m size,
+    x is m - vector
+    g is n - vector
+    b is k - vector
+    '''
+    def __init__(self, F, g, A, b):
+        F_hat = np.append(F, A, axis = 0)
+        F_hat = np.append(F_hat, -A, axis = 0)
+        g_hat = np.append(g, b, axis = 0)
+        g_hat = np.append(g_hat, -b, axis = 0)
+        super().__init__(F_hat, g_hat)
 
 
         

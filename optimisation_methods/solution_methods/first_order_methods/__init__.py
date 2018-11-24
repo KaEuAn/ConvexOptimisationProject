@@ -1,2 +1,0 @@
-from optimisation_methods.abstract_classes import GradientDescent
-

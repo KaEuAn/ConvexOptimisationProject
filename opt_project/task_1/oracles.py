@@ -8,19 +8,26 @@ class FirstOrderOracle:
         self.b = b
     
     def func(self, x):
-        assert(x.shape[0] == a.shape[0])
+        assert(x.shape[0] == self.a.shape[0])
         a = self.a
         b = self.b
-        res = math.e ** (a @ x + b) / (1 + math.e ** (a @ x + b))
+        #res = math.e ** (a @ x + b) / (1 + math.e ** (a @ x + b))
+        res = - (self.a @ x + self.b)
         return(res)
     
     def first_derivative(self, x):
         assert(x.shape[0] == self.a.shape[0])
+        '''
         func_res = self.func(x)
         res = self.a * func_res
-        return(res)
+        '''
+        return(-self.a)
+    
+    def get_dimension(self):
+        return(self.dimension)
 
 class SecondOrderOracle(FirstOrderOracle):
 
     def second_derivative(self, x):
-        return(np.outer(self.first_derivative, self.a))
+        #return(np.outer(self.first_derivative, self.a))
+        return np.zeros((x.shape[0], x.shape[0]))
