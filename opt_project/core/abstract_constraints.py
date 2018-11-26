@@ -1,6 +1,11 @@
 import numpy as np
 import sympy 
 import itertools as itt
+import math
+
+class ConstraintsFeasibilityError(Exception):
+    pass
+
 
 class NoequalLinearConstraints:
     '''
@@ -12,9 +17,9 @@ class NoequalLinearConstraints:
     x is m - vector
     g is n - vector
     '''
-    # this constant specifies the accuracy
+    # this constant specifies the relative accuracy
     # of the method in computing the result
-    epsilon = 1e-13
+    epsilon = 1e-15
     
     def __init__(self, F, g):
         self.F = F
@@ -111,7 +116,17 @@ class NoequalLinearConstraints:
         otherwise it returns False
         '''
         assert(self.F.shape[1] == x.shape[0])
-        return(np.min((self.b - self.F @ x)[numbs]) >= -self.epsilon)
+        min_index = np.argmin((self.b - self.F @ x)[numbs])
+        min_index = numbs[min_index]
+
+        # val_max will be used to compute the acceptable absolute error
+        # in computing the result
+        b_min = self.b[min_index]
+        Fx_min = self.F[min_index] @ x
+
+        # the eps is the absolute error of multiplication F @ x
+        eps = 2 * np.abs(self.F[min_index]) @ np.abs(x) * self.epsilon
+        return(b_min >= Fx_min - eps)
     
     def satisfy(self, x):
         '''
@@ -119,8 +134,8 @@ class NoequalLinearConstraints:
         if x satisfies the constraints,
         otherwise it returns False
         '''
-        assert(self.F.shape[1] == x.shape[0])
-        return(np.min(self.b - self.F @ x) >= -self.epsilon)
+        numbs = list(range(self.F.shape[0]))
+        return(self._satisfy_specific_constr(x, numbs))
 
     
     def projection(self, y):
@@ -171,8 +186,7 @@ class NoequalLinearConstraints:
                 break
         
         if not proj_satisf_constr:
-            # something have gone wrong!
-            assert(1 == 0)
+            raise ConstraintsFeasibilityError
         
         
         # selection the point, which 
@@ -183,6 +197,14 @@ class NoequalLinearConstraints:
                 min_proj = proj
         
         return min_proj
+    
+    def feasibility(self):
+        x = np.zeros(self.F.shape[1])
+        try:
+            self.projection(x)
+        except ConstraintsFeasibilityError:
+            return False
+        return True
 
 class LinearConstraints(NoequalLinearConstraints):
     '''

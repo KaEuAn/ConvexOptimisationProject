@@ -1,6 +1,9 @@
 from . import gd_superclass
 import numpy as np
 
+class InitialPositionError(Exception):
+    pass
+
 class simple_gradient_descent(gd_superclass):
 
     def __init__(self, oracle, constraints):

@@ -9,8 +9,6 @@ class FirstOrderOracle:
     
     def func(self, x):
         assert(x.shape[0] == self.a.shape[0])
-        a = self.a
-        b = self.b
         #res = math.e ** (a @ x + b) / (1 + math.e ** (a @ x + b))
         res = - (self.a @ x + self.b)
         return(res)
