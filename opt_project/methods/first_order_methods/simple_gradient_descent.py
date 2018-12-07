@@ -1,4 +1,5 @@
 from . import gd_superclass
+from . import approx_path
 import numpy as np
 
 class InitialPositionError(Exception):
@@ -21,9 +22,12 @@ class simple_gradient_descent(gd_superclass):
         return self.alpha
 
     def make(self, stop_criteria):
+        path = approx_path()
+        path.Append(self.pos)
         while not stop_criteria():
             self.make_step()
             self.pos = self.costraints.projection(self.pos)
+            path.Append(self.pos)
             # print(self.func(self.pos))
-        return(self.pos)
+        return(path)
         
