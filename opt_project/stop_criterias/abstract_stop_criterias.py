@@ -6,7 +6,7 @@ class iteration_stop_crit(object):
         self.num = its
         self.it = 0
     
-    def __call__(self):
+    def __call__(self, *args, **kwargs):
         self.it += 1
         return(self.it >= self.num)
 
@@ -16,18 +16,18 @@ class xdiff_stop_crit(object):
         self.previous = np.inf
         self.diff = diff
     
-    def __call__(self, value):
-        result = abs(self.previous - value) < self.diff
+    def __call__(self, value, *args, **kwargs):
+        result = np.linalg.norm(self.previous - value) < self.diff
         self.previous = value
         return result
 
 #returns xdiff_stop_criteria
 class ydiff_stop_crit(object):
-    def __init__(self, diff, func):
+    def __init__(self, diff):
         self.previous = np.inf
         self.diff = diff
-        self.func = func
-    def __call__(self, value):
-        result = abs(self.func(self.previous) - self.func(value)) < self.diff
-        self.previous = value
+
+    def __call__(self, value, func_value, *args, **kwargs):
+        result = np.linalg.norm(self.previous - func_value) < self.diff
+        self.previous = func_value
         return result
