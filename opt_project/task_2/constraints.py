@@ -1,5 +1,6 @@
 from . import LinearConstraints
 import numpy as np
+from copy import deepcopy
 
 class InitialisationError(Exception):
     pass
@@ -56,7 +57,7 @@ class TaskTwoLinearConstraints(LinearConstraints):
         g_res = np.append(g, [0,], axis=0)
         super().__init__(F_res, g_res, A_res, b_res)
     
-    def projection(self, x):
+    def projection(self, x, save_state = False):
         '''
         Here we make the projection
         of x with respect to 
@@ -64,12 +65,17 @@ class TaskTwoLinearConstraints(LinearConstraints):
         '''
         assert(x.shape[0] == 2)
         try:
-            self.point[-2:] = x
+            if(save_state):
+                store_state = self.point[:]
+            self.point[-2:] = x[:]
         except AttributeError:
             raise InitialisationError(
                 "The initial point of the set has't been initialised")
         self.point = super().projection(self.point)
-        return self.point[-2:]
+        res = deepcopy(self.point[-2:])
+        if save_state:
+            self.point = store_state
+        return res
     
     def initialise(self, x=None):
         '''
@@ -81,10 +87,22 @@ class TaskTwoLinearConstraints(LinearConstraints):
         '''
         if x == None:
             x = np.zeros(self.F.shape[1])
-        if self.satisfy(x):
-            self.point = x
+        if self._satisfy(x):
+            self.point = x[:]
         self.point = super().projection(x)
-        return self.point[-2:]
+        return deepcopy(self.point[-2:])
+    
+    def satisfy(self, x):
+        assert(x.shape[0] == 2)
+        try:
+            pt = self.point[:]
+            pt[-2:] = x[:]
+        except AttributeError:
+            raise InitialisationError(
+                "The initial point of the set has't been initialised")
+        
+        return self._satisfy(pt) 
+
 
 
         

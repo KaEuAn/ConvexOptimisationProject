@@ -3,6 +3,7 @@ from .step_sizes import ConstantStepSize as default_ss
 
 import numpy as np
 from inspect import signature
+from copy import deepcopy
 
 class InitialPositionError(Exception):
     pass
@@ -46,14 +47,18 @@ class simple_gradient_descent():
         self.alpha = alpha
     
     def set_init_position(self, x):
-        self.pos = x
+        if self.costraints.satisfy(x):
+            self.pos = x
+        else:
+            raise(InitialPositionError('wrong init position'))
     
     def get_gradient(self, a):
         return self.oracle.first_derivative(a)
     
     def make_step(self):
         nablaF = self.get_gradient(self.pos)
-        self.pos = self.pos - self.alpha(self.pos, nablaF, self.oracle.func) * nablaF
+        alpha =  self.alpha(self.pos, None, nablaF)
+        self.pos = self.pos - alpha * nablaF
 
     def make(self, stop_criteria):
         stop_criteria = self.param_detector(stop_criteria)

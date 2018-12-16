@@ -54,11 +54,46 @@ class ApproxPath(object):
         plt.show()
         return None
     
+    
+    def ShowIterations(self, text="") :
+        '''
+        This function returns matplotlib graphic
+        with gradient descent error of the 
+        current approximation depending on
+        the count of iterations
+        '''
+        iters = [i for i in range(len(self.a))]
+
+        # errors array generation
+        val_star = 0
+        if self.has_exact_solut:
+            val_star = self.exact_solut
+        else:
+            val_star = self.a[-1]
+        
+        errors = [np.linalg.norm(val- val_star) for val in self.a]
+
+        # showing graphic
+        plt.figure(figsize=(15,7))
+        plt.plot(iters, errors, 'k.:')
+        plt.grid(b=True, which='major', linestyle='-')
+        plt.grid(b=True, which='minor', linestyle=':')
+        plt.xlabel(r"iterations$")
+        plt.ylabel(r"error, euclidean norm")
+        plt.title(text, fontsize=20)
+        plt.legend()
+        plt.minorticks_on()
+        plt.grid(True)
+        plt.show()
+        return None
+
+
+    
     def ShowTime(self, text=""):
         '''
         This function returns matplotlib graphic
         with gradient descent error of the 
-        current appropximation depending on 
+        current approximation depending on 
         the time elapsed
 
         There are two variants of 

@@ -2,6 +2,7 @@ import numpy as np
 import sympy 
 import itertools as itt
 import math
+from copy import deepcopy
 
 class ConstraintsFeasibilityError(Exception):
     pass
@@ -128,26 +129,47 @@ class NoequalLinearConstraints:
         eps = 2 * np.abs(self.F[min_index]) @ np.abs(x) * self.epsilon
         return(b_min >= Fx_min - eps)
     
+    def _satisfy(self, x):
+        '''
+        This method returns True,
+        if x satisfies the constraints,
+        otherwise it returns False
+
+        Internal realisation
+        '''
+        numbs = list(range(self.F.shape[0]))
+        return(self._satisfy_specific_constr(x, numbs))
+    
     def satisfy(self, x):
         '''
         This method returns True,
         if x satisfies the constraints,
         otherwise it returns False
         '''
-        numbs = list(range(self.F.shape[0]))
-        return(self._satisfy_specific_constr(x, numbs))
+        return(self._satisfy(x))
+    
+    @staticmethod
+    def _clean_dependence(A, b):
+        _, indep_rows_numbers = sympy.Matrix(A).T.rref()
+        indep_rows_numbers = list(indep_rows_numbers)
+        A_indep = A[indep_rows_numbers]
+        b_indep = b[indep_rows_numbers]
+        return A_indep, b_indep
+
 
     
-    def projection(self, y):
+    def projection(self, z):
         '''
         this function returns
         x = \argmin_{x \in Set}(norm(x - y)), 
         where norm is the euclidean norm
         '''
 
+
         # check for y satisfy constraints
         # (so, projection isn't needed)
-        if self.satisfy(y) :
+        y = z[:]
+        if self._satisfy(y) :
             return y
 
         proj_satisf_constr = []
@@ -170,20 +192,22 @@ class NoequalLinearConstraints:
                         self.b[comb], 
                         y)
                     
+                    
                     if not proj is None:
                         projs.append(proj)
             
 
             # find projections that satisfy 
             # the constraints
-            proj_satisf_constr = list(
-                filter(self.satisfy, projs))
+            proj_satisf_constr.extend(list(
+                filter(self._satisfy, projs)))
             
             if proj_satisf_constr:
+                pass
                 # Success!
                 # We have merely to select the 
                 # minimal projection
-                break
+                # break
         
         if not proj_satisf_constr:
             raise ConstraintsFeasibilityError
