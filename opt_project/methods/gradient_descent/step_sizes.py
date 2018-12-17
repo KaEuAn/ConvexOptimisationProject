@@ -81,7 +81,7 @@ class ArmijoStepSize(StepSize) :
             if max_it < 0 :
                 break
             if not self.constraints.satisfy(x - grad_val * alpha):
-                x_new = self.constraints.projection(x - grad_val, save_state=True)
+                x_new = self.constraints.projection(x - grad_val)
             else:
                 x_new = x - alpha * grad_val
             if f(x_new) <= f(x) + alpha * self.beta * grad_val.dot(x_new - x):
@@ -89,6 +89,5 @@ class ArmijoStepSize(StepSize) :
             
             alpha *= self.dec_c
             max_it -= 1
-        print(x_new)
         return alpha
         

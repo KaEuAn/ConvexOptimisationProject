@@ -229,6 +229,9 @@ class NoequalLinearConstraints:
         except ConstraintsFeasibilityError:
             return False
         return True
+    
+    def parameters(self):
+        return self.F, self.b
 
 class LinearConstraints(NoequalLinearConstraints):
     '''

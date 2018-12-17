@@ -10,31 +10,6 @@ from copy import deepcopy
 
 class simple_gradient_descent():
 
-    class param_detector(object):
-        def __init__(self, func):
-            sig = signature(func)
-            if 'value' in str(sig) :
-                self.val = True
-            else :
-                self.val = False
-            
-            if 'func_value' in str(sig):
-                self.fval = True
-            else :
-                self.fval = False
-            
-            self.func = func
-        
-        def __call__(self, suppl) :
-            if self.val and self.fval:
-                return(self.func(suppl.pos, suppl.oracle.func(suppl.pos)))
-            
-            elif self.val :
-                return(self.func(suppl.pos))
-            
-            else :
-                return(self.func())
-
     def __init__(self, oracle, constraints):
         self.oracle = oracle
         self.costraints = constraints
@@ -59,10 +34,9 @@ class simple_gradient_descent():
         self.pos = self.pos - alpha * nablaF
 
     def make(self, stop_criteria):
-        stop_criteria = self.param_detector(stop_criteria)
         path = approx_path()
         path.Append(self.pos)
-        while not stop_criteria(self):
+        while not stop_criteria(self.pos, self.oracle):
             self.make_step()
             self.pos = self.costraints.projection(self.pos)
             path.Append(self.pos)

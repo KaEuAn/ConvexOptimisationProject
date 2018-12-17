@@ -2,3 +2,5 @@ from ...visualisation.visualisation_methods import ApproxPath as approx_path
 from .step_sizes import BackTrackingLineSearch as backtracking_line_search
 from .stop_criterias import newton_stop_criteria as newton_stop_criteria
 from .stop_criterias import constrained_newton_stop_criteria as constrained_newton_stop_criteria
+
+from .internal_point_method import InternalPointMethod as solver
