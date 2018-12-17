@@ -1,12 +1,10 @@
 from . import approx_path
 from .step_sizes import ConstantStepSize as default_ss
+from ...core.exceptions import InitialPositionError
 
 import numpy as np
 from inspect import signature
 from copy import deepcopy
-
-class InitialPositionError(Exception):
-    pass
         
         
 
