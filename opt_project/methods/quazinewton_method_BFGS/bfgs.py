@@ -8,7 +8,7 @@ from copy import deepcopy
         
         
 
-class simple_gradient_descent():
+class bfgs_descent():
 
     class param_detector(object):
         def __init__(self, func):
