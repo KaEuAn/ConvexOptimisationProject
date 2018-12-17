@@ -31,9 +31,6 @@ class ApproxPath(object):
     def Append(self, point):
         self.a.append(point)
         self.time_marks.append(time.clock())
-    
-    def AppendResult(self, point):
-        self.method_res = point
         
     def GetIterationAmount(self):
         return len(self.a)
