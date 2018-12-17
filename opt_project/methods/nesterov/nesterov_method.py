@@ -47,9 +47,7 @@ class nesterov_gradient_descent():
         while not stop_criteria(self.pos, self.oracle):
             self.make_step(iters_num)
             iters_num += 1
-            print(self.pos)
             self.pos = self.costraints.projection(self.pos)
-            print('proj', self.pos)
             path.Append(self.pos)
             # print(self.func(self.pos))
         return(path)

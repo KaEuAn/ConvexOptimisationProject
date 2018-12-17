@@ -78,7 +78,7 @@ class ApproxPath(object):
         plt.plot(iters, errors, 'k.:')
         plt.grid(b=True, which='major', linestyle='-')
         plt.grid(b=True, which='minor', linestyle=':')
-        plt.xlabel(r"iterations$")
+        plt.xlabel(r"iterations")
         plt.ylabel(r"error, euclidean norm")
         plt.title(text, fontsize=20)
         plt.legend()
