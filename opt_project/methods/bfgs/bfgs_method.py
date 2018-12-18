@@ -10,6 +10,9 @@ from copy import deepcopy
 
 class bfgs_descent():
 
+    eps_0 = 1e-1
+    grow_factor = 1.2
+
     def __init__(self, oracle, constraints):
         self.oracle = oracle
         self.costraints = constraints
@@ -33,7 +36,18 @@ class bfgs_descent():
         self.prev_pos = self.pos
         new_grad = self.oracle.first_derivative(self.pos)
         y = new_grad - self.prev_grad
-        self.pos = self.pos - np.linalg.inv(self.B).dot(self.prev_grad)
+        try:
+            self.pos = self.pos - np.linalg.inv(self.B).dot(self.prev_grad)
+        except :
+            eps = self.eps_0
+            while True:
+                self.B = self.B + np.eye(self.B.shape[0])*eps
+                try:
+                    self.pos = self.pos - np.linalg.inv(self.B).dot(self.prev_grad)
+                except :
+                    eps = self.grow_factor * eps
+                    continue
+                break
         self.B = self.B - (self.B.dot(s.dot(np.transpose(s).dot(self.B)))) / (np.transpose(s).dot(self.B.dot(s))) + y.dot(np.transpose(y))/(np.transpose(y).dot(s))
         
 
@@ -42,8 +56,6 @@ class bfgs_descent():
         path.Append(self.pos)
         while not stop_criteria(self.pos, self.oracle):
             self.make_step()
-            print(self.pos)
-            print(self.B)
             self.pos = self.costraints.projection(self.pos)
             path.Append(self.pos)
             # print(self.func(self.pos))
